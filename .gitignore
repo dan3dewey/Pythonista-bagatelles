@@ -1,3 +1,8 @@
+# specific to this project
+py-gatelles.sublime-project
+py-gatelles.sublime-workspace
+
+# - - - usual gitignore - - -
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
