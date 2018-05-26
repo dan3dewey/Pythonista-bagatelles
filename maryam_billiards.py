@@ -40,26 +40,26 @@ import matplotlib.pyplot as plt
 
 
 # simple assymetric 'house':
-verts = [(0,0),(0,2),(3,4),(5,2),(5,0)]
+verts = [(0, 0), (0, 2), (3, 4), (5, 2), (5, 0)]
 # symmetric version
 ##verts = [(1,0),(1,2),(3,4),(5,2),(5,0)]
 # starting location and direction of the 'ball'
 ballx = 2  # 1
 bally = 1  # 1
 rise = 1   # 1
-run = 0.25 # 2
+run = 0.25  # 2
 
 
 # very complex m:
-verts = [(0,0),(1,1),(1,5),(0,5+2.0/3.0),
-         (4,7),(3.5,5),(6,6),(8,6),(10,5),
-         (12,6),(15,6),(16.5,4.5),(16.5,1),(17.5,0),
-         (13,0),(14,1),(14,3),(13,4),(11.5,4),
-         (10.5,3),(10.5,1),(11.5,0),(7,0),(8,1),(8,3),
-         (6,4),(4,3),(4,1),(5,0)]
+verts = [(0, 0), (1, 1), (1, 5), (0, 5 + 2.0 / 3.0),
+         (4, 7), (3.5, 5), (6, 6), (8, 6), (10, 5),
+         (12, 6), (15, 6), (16.5, 4.5), (16.5, 1), (17.5, 0),
+         (13, 0), (14, 1), (14, 3), (13, 4), (11.5, 4),
+         (10.5, 3), (10.5, 1), (11.5, 0), (7, 0), (8, 1), (8, 3),
+         (6, 4), (4, 3), (4, 1), (5, 0)]
 # starting location and direction of the 'ball'
 ballx = 1
-bally = 3+0.11
+bally = 3 + 0.11
 rise = 2
 run = 5
 
@@ -94,39 +94,39 @@ def find_hit_edge():
     # The 4-quadrant atan2(y,x) gives -pi to +pi , ccw angle w.r.t. x axis.
     # Use both atan2(y,x) and atan2(x,y) to avoid the problem of
     # the jump from -pi to pi.
-    ball_angx = atan2(rise,run)
-    ball_angy = atan2(run,rise)
+    ball_angx = atan2(rise, run)
+    ball_angy = atan2(run, rise)
     ##print("ball angle:", ball_angx, "  ", ball_angy)
     # angle of the first vertex
-    ivert=0
-    vertdx = verts[ivert][0]-ballx
-    vertdy = verts[ivert][1]-bally
-    last_angx = atan2(vertdy,vertdx)
-    last_angy = atan2(vertdx,vertdy)
+    ivert = 0
+    vertdx = verts[ivert][0] - ballx
+    vertdy = verts[ivert][1] - bally
+    last_angx = atan2(vertdy, vertdx)
+    last_angy = atan2(vertdx, vertdy)
     # go through subsequent vertices to find an edge (or the edges)
     # that contains the balls direction
     edge_verts = []
-    for ivert in range(1,len(verts)):
-        vertdx = verts[ivert][0]-ballx
-        vertdy = verts[ivert][1]-bally
-        vert_angx = atan2(vertdy,vertdx)
-        vert_angy = atan2(vertdx,vertdy)
+    for ivert in range(1, len(verts)):
+        vertdx = verts[ivert][0] - ballx
+        vertdy = verts[ivert][1] - bally
+        vert_angx = atan2(vertdy, vertdx)
+        vert_angy = atan2(vertdx, vertdy)
         ##print("vert ang:", vert_angx, "  ", vert_angy)
         # ball angle between this and last angles in both x and y measures
         xang_ok = (ball_angx < last_angx) and (ball_angx >= vert_angx)
         yang_ok = (ball_angy > last_angy) and (ball_angy <= vert_angy)
         # if either x or y ang measures are straddling their -pi to pi zone,
         # then set that one to true to ignore it
-        if (abs(last_angx - vert_angx) > 1.2*pi):
+        if (abs(last_angx - vert_angx) > 1.2 * pi):
             xang_ok = True
-        if (abs(last_angy - vert_angy) > 1.2*pi):
+        if (abs(last_angy - vert_angy) > 1.2 * pi):
             yang_ok = True
         # is this the/an edge we're looking for
         if (xang_ok and yang_ok):
             edge_verts.append(ivert - 1)
         # save these for next edge
-        last_angx = 1.0*vert_angx
-        last_angy = 1.0*vert_angy
+        last_angx = 1.0 * vert_angx
+        last_angy = 1.0 * vert_angy
     # didn't find any?
     if len(edge_verts) == 0:
         return -1
@@ -138,28 +138,28 @@ def find_hit_edge():
     closest = -1
     for this_edge in edge_verts:
         # use the midpoint for the edge distance calc
-        xcent = (verts[this_edge][0]+verts[this_edge+1][0])/2
-        ycent = (verts[this_edge][1]+verts[this_edge+1][1])/2
-        this_dist = (xcent-ballx)**2+(ycent-bally)**2
+        xcent = (verts[this_edge][0] + verts[this_edge + 1][0]) / 2
+        ycent = (verts[this_edge][1] + verts[this_edge + 1][1]) / 2
+        this_dist = (xcent - ballx)**2 + (ycent - bally)**2
         ##print(this_edge, "  ", this_dist)
         if this_dist < dist:
-            dist = 1.0*this_dist
+            dist = 1.0 * this_dist
             closest = this_edge
-    ##print("")
+    # print("")
     return closest
 
 
-def line_intersect(x1,y1,x2,y2,x3,y3,x4,y4):
+def line_intersect(x1, y1, x2, y2, x3, y3, x4, y4):
     # Use two known points on each line and determinants to get
     # the intersection coordinates.
     #   https://en.wikipedia.org/wiki/Line-line_intersection
     # The denominator - should not be zero (not tested here)
-    denom = (x1-x2)*(y3-y4) - (y1-y2)*(x3-x4)
+    denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
     # the numerators
-    xnumer = (x1*y2-y1*x2)*(x3-x4)-(x1-x2)*(x3*y4-y3*x4)
-    ynumer = (x1*y2-y1*x2)*(y3-y4)-(y1-y2)*(x3*y4-y3*x4)
+    xnumer = (x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4)
+    ynumer = (x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4)
     # the point of intersection
-    return xnumer/denom, ynumer/denom
+    return xnumer / denom, ynumer / denom
 
 
 def intersect_reflect(hit_edge):
@@ -167,26 +167,30 @@ def intersect_reflect(hit_edge):
     # Use these variables to be able to change the ball's values
     global ballx, bally, rise, run
     # set up to find the intersection
-    x1 = ballx; y1 = bally
-    x2 = ballx+run; y2 = bally+rise
-    x3 = verts[hit_edge][0]; y3 = verts[hit_edge][1];
-    x4 = verts[hit_edge+1][0]; y4 = verts[hit_edge+1][1];
+    x1 = ballx
+    y1 = bally
+    x2 = ballx + run
+    y2 = bally + rise
+    x3 = verts[hit_edge][0]
+    y3 = verts[hit_edge][1]
+    x4 = verts[hit_edge + 1][0]
+    y4 = verts[hit_edge + 1][1]
     # and find it
-    xinter, yinter = line_intersect(x1,y1,x2,y2,x3,y3,x4,y4)
+    xinter, yinter = line_intersect(x1, y1, x2, y2, x3, y3, x4, y4)
     # move the ball to the intersection
     ballx = xinter
     bally = yinter
     # Reflect the direction of motion
     # Separate the direction vector into a vector along the edge
     # and one normal to the edge
-    alongx = x4-x3
-    alongy = y4-y3
-    alongmag = sqrt(alongx*alongx+alongy*alongy)
+    alongx = x4 - x3
+    alongy = y4 - y3
+    alongmag = sqrt(alongx * alongx + alongy * alongy)
     # dot product of direction and the along unit vector
-    dir_dot_alonguv = (run*alongx+ rise*alongy)/alongmag
+    dir_dot_alonguv = (run * alongx + rise * alongy) / alongmag
     # the direction component along the edge
-    dir_alongx = dir_dot_alonguv*alongx/alongmag
-    dir_alongy = dir_dot_alonguv*alongy/alongmag
+    dir_alongx = dir_dot_alonguv * alongx / alongmag
+    dir_alongy = dir_dot_alonguv * alongy / alongmag
     # subtract the along component to leave the normal component
     dir_normalx = run - dir_alongx
     dir_normaly = rise - dir_alongy
@@ -199,8 +203,8 @@ def assemble_path(nsegs):
     # Assemble the locations of the desired number of paths
     if nsegs == 0:
         # just show initial location and direction
-        pathxs = [ballx, ballx+run]
-        pathys = [bally, bally+rise]
+        pathxs = [ballx, ballx + run]
+        pathys = [bally, bally + rise]
     else:
         # start at initial location
         pathxs = [ballx]
@@ -213,11 +217,16 @@ def assemble_path(nsegs):
             # didn't find an edge? maybe hit a vertex?
             if hit_edge < 0:
                 # add some little wiggle to indicate this, and stop
-                pathxs.append(ballx+0.1); pathys.append(bally-0.1)
-                pathxs.append(ballx+0.1); pathys.append(bally+0.1)
-                pathxs.append(ballx-0.1); pathys.append(bally+0.1)
-                pathxs.append(ballx-0.1); pathys.append(bally-0.1)
-                pathxs.append(ballx+0.1); pathys.append(bally-0.1)
+                pathxs.append(ballx + 0.1)
+                pathys.append(bally - 0.1)
+                pathxs.append(ballx + 0.1)
+                pathys.append(bally + 0.1)
+                pathxs.append(ballx - 0.1)
+                pathys.append(bally + 0.1)
+                pathxs.append(ballx - 0.1)
+                pathys.append(bally - 0.1)
+                pathxs.append(ballx + 0.1)
+                pathys.append(bally - 0.1)
                 break
             # update the ball location (ballx, bally) and direction (rise, run)
             intersect_reflect(hit_edge)
@@ -244,10 +253,11 @@ def maryam(nsegs):
     plt.figure(1, [9, 7], frameon=False)
     plt.xlabel('x')
     plt.ylabel('y')
-    plt.title('Maryam Billiards Output  ('+str(len(pathxs)-1)+" segments)")
+    plt.title('Maryam Billiards Output  (' +
+              str(len(pathxs) - 1) + " segments)")
 
     # show the polygon
-    plot_polygon();
+    plot_polygon()
     # add the path of the 'ball'
     plt.plot(pathxs, pathys, '-b')
 
@@ -256,5 +266,3 @@ def maryam(nsegs):
 
 if __name__ == "__main__":
     maryam(nsegments)
-
-
